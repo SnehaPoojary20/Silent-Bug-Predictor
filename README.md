@@ -181,42 +181,13 @@ This project demonstrates:
 * Scalable System Design Principles
 
 ---
-
-# 🏗 Detailed Architecture Diagram 
-
-                ┌──────────────────────┐
-                │      React UI        │
-                │  (Repo URL Input)    │
-                └─────────┬────────────┘
-                          │
-                          ▼
-                ┌──────────────────────┐
-                │   FastAPI Backend    │
-                │   /analyze Endpoint  │
-                └─────────┬────────────┘
-                          │
-        ┌─────────────────┴──────────────────┐
-        ▼                                    ▼
-┌───────────────┐                    ┌────────────────┐
-│ GitHub API    │                    │ Feature Engine │
-│ Repo Metadata │                    │ AST Analysis   │
-└───────────────┘                    └────────────────┘
-                                                │
-                                                ▼
-                                    ┌──────────────────┐
-                                    │ XGBoost Model    │
-                                    │ Risk Prediction  │
-                                    └──────────────────┘
-                                                │
-                                                ▼
-                                    ┌──────────────────┐
-                                    │ JSON Risk Report │
-                                    └──────────────────┘
-                                                │
-                                                ▼
-                                    ┌──────────────────┐
-                                    │ React Dashboard  │
-                                    └──────────────────┘
+```mermaid
+flowchart TD
+    A[React UI - Repo URL Input] --> B[FastAPI Backend /analyze]
+    B --> C[GitHub API]
+    B --> D[Feature Engine - AST Analysis]
+    D --> E[XGBoost Model]
+    E --> F[Risk Prediction]
+    F --> G[JSON Response]
+    G --> H[React Dashboard]
 ```
-
----
