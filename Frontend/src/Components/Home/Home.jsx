@@ -3,8 +3,10 @@ import "./Home.css"
 
 const Home = () => {
   return (
-    <div>
+    <div className=''>
       <h1>Welcome to Silent Bug Predictor</h1>
+
+
     </div>
   )
 }
