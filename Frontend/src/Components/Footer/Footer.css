@@ -1,0 +1,44 @@
+.footer-container {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease-in-out;
+}
+
+/* Link Hover Animation */
+.hover-white {
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.hover-white:hover {
+    color: #ffffff !important;
+}
+
+/* Glowing dot for the 'Backend Online' badge */
+.badge-success-pulse {
+    background-color: #28a745;
+    box-shadow: 0 0 0 rgba(40, 167, 69, 0.4);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+    }
+}
+
+/* Social Icon or link spacing */
+.footer-links li {
+    padding: 0 10px;
+}
+
+/* Ensuring the footer is truly at the bottom */
+footer {
+    width: 100%;
+    margin-top: auto; 
+}
