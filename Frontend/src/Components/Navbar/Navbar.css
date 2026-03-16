@@ -71,3 +71,14 @@
   }
 
 }
+
+.nav-item-link {
+  color: #b5b5b5;
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.25s ease;
+}
+
+.nav-item-link:hover {
+  color: #ffffff;
+}
