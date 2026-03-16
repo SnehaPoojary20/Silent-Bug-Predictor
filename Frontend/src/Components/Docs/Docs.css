@@ -12,7 +12,7 @@
 
 .docs-subtitle {
   font-size: 1rem;
-  color: #b0b0b0;
+  color: #838181;
   margin-bottom: 40px;
   line-height: 1.6;
 }
@@ -37,7 +37,7 @@
 
 .docs-content li {
   font-size: 0.95rem;
-  color: #b0b0b0;
+  color: #838181;
   line-height: 1.5;
 }
 
@@ -46,12 +46,12 @@
   padding: 2px 6px;
   border-radius: 4px;
   font-size: 0.9rem;
-  color: #f0f0f0;
+  color: #838181;
 }
 
 .docs-note {
   margin-top: 20px;
   font-size: 0.95rem;
-  color: #b0b0b0;
+  color: #838181;;
   line-height: 1.6;
 }
