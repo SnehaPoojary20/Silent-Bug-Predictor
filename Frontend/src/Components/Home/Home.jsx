@@ -3,7 +3,7 @@ import "./Home.css"
 
 const Home = () => {
   return (
-    <div className=''>
+    <div className='home'>
           <h1>Welcome to Silent Bug Predictor</h1>
        
 

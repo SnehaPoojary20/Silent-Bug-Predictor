@@ -25,7 +25,7 @@ const Navbar = () => {
           >
             <span className="navbar-toggler-icon"></span>
           </button>
-          <span className="navbar-brand mb-0 h1 ms-3">Bug Predictor AI</span>
+          {/* <span className="navbar-brand mb-0 h1 ms-3">Silent Bug Predictor</span> */}
         </div>
       </nav>
     </div>
