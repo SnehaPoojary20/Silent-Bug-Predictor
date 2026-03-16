@@ -1,0 +1,57 @@
+.docs-section {
+  background: beige;
+  color: black;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.docs-section h1 {
+  font-size: 2.2rem;
+  margin-bottom: 12px;
+}
+
+.docs-subtitle {
+  font-size: 1rem;
+  color: #b0b0b0;
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+.docs-content {
+  max-width: 900px;
+  margin: auto;
+  text-align: left;
+}
+
+.docs-content h3 {
+  font-size: 1.2rem;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.docs-content ul {
+  list-style: disc;
+  padding-left: 20px;
+  margin-bottom: 20px;
+}
+
+.docs-content li {
+  font-size: 0.95rem;
+  color: #b0b0b0;
+  line-height: 1.5;
+}
+
+.docs-content code {
+  background: #222;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #f0f0f0;
+}
+
+.docs-note {
+  margin-top: 20px;
+  font-size: 0.95rem;
+  color: #b0b0b0;
+  line-height: 1.6;
+}
