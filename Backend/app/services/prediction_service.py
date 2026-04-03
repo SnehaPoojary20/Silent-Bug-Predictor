@@ -1,12 +1,19 @@
 import joblib
 
-# Load the trained model
-model = joblib.load("app/model/bug_model.pkl")
-
+# Load once (IMPORTANT for performance)
+model = joblib.load("data/bug_model.pkl")
 
 def predict_risk(features):
 
-    # Predict probability of bug
-    probabilities = model.predict_proba(features)[:, 1]
+    probs = model.predict_proba(features)[:, 1]
 
-    return probabilities
+    results = []
+    
+    # assuming features has 'file' column
+    for i, file in enumerate(features["file"]):
+        results.append({
+            "file": file,
+            "risk_score": float(probs[i])
+        })
+
+    return results
