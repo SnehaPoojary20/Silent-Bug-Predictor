@@ -4,8 +4,7 @@ import Home from './Components/Home/Home.jsx';
 import Navbar from './Components/Navbar/Navbar.jsx';
 import Product from './Components/Product/Product.jsx';
 import Working from './Components/Working/Working.jsx';
-import Demo from './Components/Demo/Demo.jsx';
-import Docs from './Components/Docs/Docs.jsx';
+import Analyze from "./Components/Analyze/Analyze.jsx"
 import Footer from './Components/Footer/Footer.jsx';
 
 
@@ -18,7 +17,7 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/product" element={<Product />} />
         <Route path="/working" element={<Working />} />
-        <Route path="/demo" element={<Demo />} />
+        <Route path="/analyze" element={<Analyze />} />
         <Route path="/docs" element={<Docs />} />
 
       </Routes>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import "./Demo.css";
+import "./Analyze.css";
 
-const Demo = () => {
+const Analyze = () => {
   const [repoName, setRepoName] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);

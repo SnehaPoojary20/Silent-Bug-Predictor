@@ -1,6 +1,6 @@
 import React from "react";
 import "./Home.css";
-import Analyze from "../Analyze/Analyze";
+
 
 const Home = () => {
   return (
