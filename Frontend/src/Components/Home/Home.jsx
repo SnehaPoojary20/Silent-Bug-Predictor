@@ -1,4 +1,5 @@
 import React from "react";
+import Analyze from "../Analyze/Analyze";
 import "./Home.css";
 
 

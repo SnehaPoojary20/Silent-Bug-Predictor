@@ -5,6 +5,7 @@ import Navbar from './Components/Navbar/Navbar.jsx';
 import Product from './Components/Product/Product.jsx';
 import Working from './Components/Working/Working.jsx';
 import Analyze from "./Components/Analyze/Analyze.jsx"
+import Docs from "./Components/Docs/Docs.jsx"
 import Footer from './Components/Footer/Footer.jsx';
 
 

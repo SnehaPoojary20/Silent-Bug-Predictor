@@ -23,8 +23,8 @@ const Navbar = () => {
           <Link className="nav-item-link" to="/working">
             How it Works
           </Link>
-          <Link className="nav-item-link" to="/demo">
-            Demo
+          <Link className="nav-item-link" to="/analyze">
+            Analyze
           </Link>
           <Link className="nav-item-link" to="/docs">
             Docs

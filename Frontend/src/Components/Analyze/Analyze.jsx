@@ -110,4 +110,4 @@ const Analyze = () => {
   );
 };
 
-export default Demo;
+export default Analyze;
