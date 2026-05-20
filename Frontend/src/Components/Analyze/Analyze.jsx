@@ -50,7 +50,7 @@ const Analyze = () => {
   return (
     <section className="demo-section">
       <div className="container">
-        <h1>Try the Demo</h1>
+        <h1>Analyze Your Repository</h1>
 
         <p className="demo-subtitle">
           Paste a GitHub repository URL to detect high-risk files instantly.
