@@ -1,0 +1,9 @@
+# Frontend should not dominate language stats
+frontend/** linguist-vendored
+
+# Build/generated files
+dist/** linguist-generated
+build/** linguist-generated
+
+# Python files are source code
+*.py linguist-detectable=true
