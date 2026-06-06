@@ -1,9 +1,9 @@
-# Frontend should not dominate language stats
-frontend/** linguist-vendored
+# Exclude React frontend from language statistics
+Frontend/** linguist-vendored
 
-# Build/generated files
-dist/** linguist-generated
-build/** linguist-generated
+# Ignore build output
+Frontend/build/** linguist-generated
+Frontend/dist/** linguist-generated
 
-# Python files are source code
+# Count Python files
 *.py linguist-detectable=true
