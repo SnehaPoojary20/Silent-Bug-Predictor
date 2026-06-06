@@ -1,98 +1,77 @@
-## 🧠 Silent Bug Predictor
+# Silent Bug Predictor
 
-AI-powered system that analyzes GitHub repositories to predict bug-prone files using commit history and structural complexity metrics.
+An end-to-end ML system that analyzes GitHub repositories and predicts which files are most likely to contain bugs — using commit history patterns and AST-extracted code complexity metrics.
 
----
-
-## 🚀 Tech Stack
-
-### Backend
-
-* Python
-* FastAPI
-* Pandas
-* XGBoost
-* GitHub REST API
-* Docker
-
-### Frontend
-
-* React.js
-* CSS
-* Axios
+**GitHub:** [github.com/SnehaPoojary20/Silent-Bug-Predictor](https://github.com/SnehaPoojary20/Silent-Bug-Predictor)
 
 ---
 
-## 🎯 Features
+## The Problem
 
-* Repository-level analysis via GitHub URL
-* Feature engineering from commit history & code structure
-* ML-based probabilistic risk scoring
-* Ranked list of high-risk files
-* RESTful API architecture
-* Dockerized deployment
+Code review is expensive, and teams often don't know where to focus. Bug-prone files tend to share measurable characteristics: they're touched frequently by many contributors, they're structurally complex, and they accrue changes rapidly. This project makes those signals quantifiable and actionable.
 
 ---
 
-## 🏗 System Architecture
+## System Architecture
 
 ```
-Frontend (React)
-        ↓
-FastAPI Backend
-        ↓
-GitHub API
-        ↓
-Feature Extraction (AST + Metadata)
-        ↓
-ML Model (XGBoost)
-        ↓
-Risk Scoring Engine
-        ↓
-JSON Response → UI Visualization
+React Frontend
+      │
+      ▼
+FastAPI Backend  ←── POST /analyze { "repo_url": "..." }
+      │
+      ├── GitHub REST API  →  file tree + commit metadata
+      │
+      ├── Feature Extraction
+      │     ├── AST Analysis (LOC, function count, cyclomatic complexity)
+      │     └── Commit Metadata (commit count, contributors, last modified)
+      │
+      ├── XGBoost Classifier  →  probability score per file
+      │
+      └── Risk Scoring Engine  →  ranked JSON response
 ```
 
 ---
 
-## 🔄 End-to-End Flow
+## Feature Engineering
 
-### 1️⃣ User Input
+Each file gets six engineered features before hitting the model:
 
-User enters GitHub repository URL in frontend.
+| Feature | Description | Source |
+|---------|-------------|--------|
+| `commits` | Number of commits touching this file | GitHub API |
+| `contributors` | Unique authors who modified the file | GitHub API |
+| `last_modified_days` | Days since most recent commit | GitHub API |
+| `loc` | Lines of code | AST / file read |
+| `functions` | Number of function definitions | `ast.FunctionDef` |
+| `complexity` | Control flow node count (if/for/while/try) | `ast.walk()` |
 
-### 2️⃣ API Request
+**Why these features?** Files with high commit counts + many contributors tend to accumulate technical debt. High complexity with low test coverage is a known bug predictor. `last_modified_days` surfaces files that were once heavily changed but haven't been touched since — often forgotten danger zones.
 
-Frontend sends POST request:
+---
 
-```
-POST /analyze
+## The ML Model
+
+- **Algorithm:** XGBoost binary classifier
+- **Target:** Bug-prone (1) vs. not bug-prone (0)
+- **Validation:** Precision-based evaluation on historical commit data
+- **Achieved precision:** ~75% on production test sets
+
+XGBoost was chosen over simpler classifiers because it handles feature interactions well (e.g., high complexity AND high contributor count is more predictive than either alone) and provides probability outputs for risk scoring.
+
+---
+
+## API
+
+### `POST /analyze`
+
+```json
+// Request
 {
   "repo_url": "https://github.com/user/repo"
 }
-```
 
-### 3️⃣ Backend Processing
-
-* Parse repo URL
-* Fetch file tree from GitHub API
-* Extract Python files
-* Collect commit metadata
-* Compute structural metrics using AST:
-
-  * LOC
-  * Function count
-  * Complexity score
-* Construct feature dataframe
-
-### 4️⃣ ML Prediction
-
-* Load trained XGBoost model
-* Generate probability scores
-* Classify risk levels
-
-### 5️⃣ Response
-
-```json
+// Response
 {
   "total_files": 24,
   "high_risk_files": [
@@ -100,68 +79,57 @@ POST /analyze
       "file": "auth.py",
       "risk_score": 0.87,
       "risk_level": "High"
+    },
+    {
+      "file": "db_utils.py",
+      "risk_score": 0.61,
+      "risk_level": "Medium"
     }
   ]
 }
 ```
 
-### 6️⃣ Frontend Display
-
-* Risk ranking table
-* Highlight high-risk modules
-* Summary metrics dashboard
+### `GET /health`
+Returns `{"status": "ok"}`.
 
 ---
 
-## 🧮 Feature Engineering
+## Tech Stack
 
-Per file extracted:
-
-| Feature            | Description                      |
-| ------------------ | -------------------------------- |
-| commits            | Number of commits affecting file |
-| contributors       | Unique authors modifying file    |
-| loc                | Lines of code                    |
-| functions          | Count of functions (AST)         |
-| complexity         | Control flow node count          |
-| last_modified_days | Days since last commit           |
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React.js, Axios, CSS |
+| Backend | Python, FastAPI |
+| Data processing | Pandas |
+| Static analysis | Python `ast` module |
+| ML model | XGBoost |
+| External data | GitHub REST API |
+| Deployment | Docker |
 
 ---
 
-## 🐳 Running Locally
-
-### Backend
+## Local Setup
 
 ```bash
+git clone https://github.com/SnehaPoojary20/Silent-Bug-Predictor.git
+
+# Backend
 cd backend
 python -m venv venv
-venv\Scripts\activate
+venv\Scripts\activate        # Windows
+# source venv/bin/activate   # Mac/Linux
 pip install -r requirements.txt
 uvicorn app.main:app --reload
-```
+# Runs at http://localhost:8000
 
----
-
-### Frontend
-
-```bash
-cd frontend
+# Frontend
+cd ../frontend
 npm install
 npm start
+# Runs at http://localhost:3000
 ```
 
----
-
-## 📊 Model Details
-
-* Model: XGBoost Classifier
-* Input: Repository structural & historical metrics
-* Output: Probability of bug-prone classification
-* Evaluation: Precision-based validation on historical data
-
----
-
-## 📦 Docker 
+### Docker
 
 ```bash
 docker build -t silent-bug-predictor .
@@ -170,24 +138,9 @@ docker run -p 8000:8000 silent-bug-predictor
 
 ---
 
-## 💡 Why This Project
+## What I'd improve next
 
-This project demonstrates:
-
-* Applied Machine Learning in Software Engineering
-* Feature Engineering from Version Control Data
-* Backend API Architecture
-* Code Structure Analysis using AST
-* Scalable System Design Principles
-
----
-```mermaid
-flowchart TD
-    A[React UI - Repo URL Input] --> B[FastAPI Backend /analyze]
-    B --> C[GitHub API]
-    B --> D[Feature Engine - AST Analysis]
-    D --> E[XGBoost Model]
-    E --> F[Risk Prediction]
-    F --> G[JSON Response]
-    G --> H[React Dashboard]
-```
+- **Retrain on real bug datasets** (e.g., using BugZilla or issue-linked commits) instead of proxy labels
+- **Language support beyond Python** — extend AST analysis to JavaScript/TypeScript
+- **File-level diff analysis** to capture churn rate, not just total commit count
+- **GitHub App integration** so this can run as a PR check automatically
