@@ -1,19 +1,16 @@
+import os
 import joblib
 
-# Load once (IMPORTANT for performance)
-model = joblib.load("data/bug_model.pkl")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+model = joblib.load(os.path.join(BASE_DIR, "data", "bug_model.pkl"))  
 
-def predict_risk(features):
-
+def predict_risk(features, file_names): 
     probs = model.predict_proba(features)[:, 1]
-
-    results = []
     
-    # assuming features has 'file' column
-    for i, file in enumerate(features["file"]):
+    results = []
+    for i, file in enumerate(file_names):  
         results.append({
             "file": file,
-            "risk_score": float(probs[i])
+            "risk_score": round(float(probs[i]), 4)
         })
-
-    return results
+    return sorted(results, key=lambda x: x["risk_score"], reverse=True)

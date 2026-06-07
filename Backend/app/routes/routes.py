@@ -14,17 +14,9 @@ def get_health():
 def get_repo_details(repo_name: str):
     return fetch_repo_metrics(repo_name)
 
-
 @router.post("/predict")
 def predict(repo_name: str):
-    
-    # Step 1: Fetch repo data
     repo_data = fetch_repo_metrics(repo_name)
-
-    # Step 2: Extract features
-    features = extract_features(repo_data)
-
-    # Step 3: Predict
-    predictions = predict_risk(features)
-
+    features, file_names = extract_features(repo_data)  
+    predictions = predict_risk(features, file_names)     
     return predictions

@@ -1,42 +1,59 @@
 from github import Github
 import pandas as pd
 import os
+from datetime import datetime, timezone
 
 token = os.getenv("GITHUB_TOKEN")
-
 g = Github(token)
 
 repo = g.get_repo("tensorflow/tensorflow")
-
 commits = repo.get_commits()
 
-data = []
+from collections import defaultdict
 
-bug_keywords = ["fix", "bug", "error", "issue"]
+file_commit_count = defaultdict(int)
+file_contributors = defaultdict(set)
+file_last_modified = {}
+file_is_buggy = defaultdict(int)
+
+bug_keywords = ["fix", "bug", "error", "issue", "patch", "hotfix"]
 
 for commit in commits[:300]:
-
     message = commit.commit.message.lower()
-
-    is_buggy = any(word in message for word in bug_keywords)
-
+    is_buggy = int(any(word in message for word in bug_keywords))
     files = commit.files
 
     if files:
-
         for file in files:
+            file_commit_count[file.filename] += 1
+            file_contributors[file.filename].add(
+                commit.author.login if commit.author else "unknown"
+            )
+            file_last_modified[file.filename] = commit.commit.author.date
+            # if ANY commit touching this file was a bug fix, label it buggy
+            if is_buggy:
+                file_is_buggy[file.filename] = 1
 
-            data.append({
-                "file_name": file.filename,
-                "commit_churn": file.changes,
-                "file_depth": file.filename.count("/"),
-                "buggy": int(is_buggy)
-            })
+data = []
 
-# Create dataframe
+for file, count in file_commit_count.items():
+    last_modified = file_last_modified.get(file)
+    if last_modified:
+        if last_modified.tzinfo is None:
+            last_modified = last_modified.replace(tzinfo=timezone.utc)
+        days_since = (datetime.now(timezone.utc) - last_modified).days
+    else:
+        days_since = 0
+
+    data.append({
+        "file_name": file,
+        "commit_churn": count,
+        "contributors": len(file_contributors[file]),
+        "days_since_modified": days_since,
+        "file_depth": file.count("/"),
+        "buggy": file_is_buggy.get(file, 0),
+    })
+
 df = pd.DataFrame(data)
-
-# Save CSV
-df.to_csv("training_data.csv", index=False)
-
-print("Dataset created successfully")
+df.to_csv("training/training_data.csv", index=False)
+print(f"Dataset created: {len(df)} rows")
