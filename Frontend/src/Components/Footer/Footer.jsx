@@ -1,45 +1,80 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./Footer.css";
-import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
 
 const Footer = () => {
   const year = new Date().getFullYear();
 
   return (
     <footer className="footer">
-      <div className="footer-container">
+      <div className="footer__inner">
 
-        {/* Brand */}
-        <div className="footer-brand">
-          <h4>Silent Bug Predictor</h4>
-          <p>
-            AI powered system that detects bug-prone files using commit churn,
-            repository structure, and machine learning models.
+        <div className="footer__brand">
+          <div className="footer__brand-logo">
+            <span className="footer__brand-hex">⬡</span>
+            <span className="footer__brand-name">
+              Silent<span>Bug</span>
+            </span>
+          </div>
+          <p className="footer__brand-desc">
+            ML-powered bug prediction for GitHub repositories.
+            Built with FastAPI, XGBoost, and Python AST.
           </p>
+          <div className="footer__social">
+            <a
+              href="https://github.com/SnehaPoojary20/Silent-Bug-Predictor"
+              target="_blank"
+              rel="noreferrer"
+              className="footer__social-link"
+            >
+              GitHub
+            </a>
+            <a
+              href="https://linkedin.com/in/snehapoojary2020"
+              target="_blank"
+              rel="noreferrer"
+              className="footer__social-link"
+            >
+              LinkedIn
+            </a>
+          </div>
         </div>
 
-        {/* Links */}
-        <div className="footer-links">
-          <h5>Product</h5>
-          <a href="#methodology">Methodology</a>
-          <a href="#docs">API Docs</a>
-          <a href="https://github.com" target="_blank" rel="noreferrer">GitHub API</a>
-        </div>
-
-        {/* Social */}
-        <div className="footer-social">
-          <h5>Connect</h5>
-          <div className="social-icons">
-            <a href="#"><FaGithub /></a>
-            <a href="#"><FaLinkedin /></a>
-            <a href="#"><FaTwitter /></a>
+        <div className="footer__nav">
+          <div className="footer__col">
+            <h5 className="footer__col-title">Product</h5>
+            <Link to="/product" className="footer__link">Features</Link>
+            <Link to="/working" className="footer__link">How It Works</Link>
+            <Link to="/analyze" className="footer__link">Analyze Repo</Link>
+          </div>
+          <div className="footer__col">
+            <h5 className="footer__col-title">Developer</h5>
+            <Link to="/docs" className="footer__link">API Docs</Link>
+            <a
+              href="https://github.com/SnehaPoojary20/Silent-Bug-Predictor"
+              target="_blank"
+              rel="noreferrer"
+              className="footer__link"
+            >
+              Source Code
+            </a>
           </div>
         </div>
 
       </div>
 
-      <div className="footer-bottom">
-        © {year} Silent Bug Predictor. All rights reserved.
+      <div className="footer__bottom">
+        <span className="footer__copy">© {year} Silent Bug Predictor</span>
+        <span className="footer__built">
+          Built by{" "}
+          <a
+            href="https://github.com/SnehaPoojary20"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Sneha Poojary
+          </a>
+        </span>
       </div>
     </footer>
   );

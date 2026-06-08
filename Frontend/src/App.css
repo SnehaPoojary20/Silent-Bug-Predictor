@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-primary: #080c10;
+  --bg-secondary: #0d1117;
+  --bg-card: #111820;
+  --bg-card-hover: #161e28;
+  --accent-green: #00ff88;
+  --accent-green-dim: #00cc6a;
+  --accent-green-glow: rgba(0, 255, 136, 0.15);
+  --accent-orange: #ff6b35;
+  --accent-blue: #4d9fff;
+  --text-primary: #e8edf2;
+  --text-secondary: #7a8899;
+  --text-muted: #4a5568;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-accent: rgba(0, 255, 136, 0.25);
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-display: 'Syne', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Shared section utilities */
+.section-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent-green);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -1px;
+  margin-bottom: 20px;
+}
+
+.section-body {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  max-width: 680px;
+  margin-bottom: 60px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: #2a3441; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3a4a5a; }
+
+/* Selection */
+::selection {
+  background: rgba(0, 255, 136, 0.2);
+  color: var(--text-primary);
+}
