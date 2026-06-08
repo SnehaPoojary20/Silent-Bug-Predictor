@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap');
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -22,7 +22,7 @@
   --border-subtle: rgba(255, 255, 255, 0.06);
   --border-accent: rgba(0, 255, 136, 0.25);
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  --font-display: 'Syne', sans-serif;
+  --font-display: 'Outfit', sans-serif;
 }
 
 html {
@@ -50,10 +50,10 @@ body {
 
 .section-title {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 800;
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+  font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: -1px;
+  letter-spacing: -0.3px;
   margin-bottom: 20px;
 }
 

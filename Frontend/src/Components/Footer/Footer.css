@@ -32,9 +32,9 @@
 }
 
 .footer__brand-name {
-  font-family: var(--font-display, 'Syne', sans-serif);
+  font-family: var(--font-display, 'Outfit', sans-serif);
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary, #e8edf2);
 }
 

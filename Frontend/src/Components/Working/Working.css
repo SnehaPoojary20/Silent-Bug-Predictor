@@ -50,9 +50,9 @@
 .step-card__content { flex: 1; }
 
 .step-card__title {
-  font-family: var(--font-display, 'Syne', sans-serif);
+  font-family: var(--font-display, 'Outfit', sans-serif);
   font-size: 1.05rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary, #e8edf2);
   margin-bottom: 8px;
 }
