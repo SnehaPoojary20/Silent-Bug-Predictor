@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.db.session import Base
 
 
- # This describes the 'users' table in PostgreSQL.
+# This describes the 'users' table in PostgreSQL.
 class User(Base):
     
     id: Mapped[int] = mapped_column (
