@@ -34,6 +34,24 @@ async def register_user(db: AsyncSession, user_in: UserCreate)-> User:
 
 
 
+async def authenticate_user(db: AsyncSession, email: str, password: str) -> User:
+     user = await get_user_by_email(db, email)
+
+     if not user:
+          raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+          )
+     
+     if not verify_password(password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+        )
+
+     return user
+
+
 
 
 
