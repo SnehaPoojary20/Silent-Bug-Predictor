@@ -12,8 +12,6 @@ from app.core.security import decode_token
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 # Dependency that gives routes a DB session.
-#'async with' = open and auto-close (like try/finally)
-#'yield' = pause here, give session to route, come back to close
 async def get_db():
     async with AsyncSessionLocal() as session:
         yield session
@@ -35,22 +33,11 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 async def get_db():
-    """
-    Dependency that gives routes a DB session.
-    
-    Like a checkout counter:
-    - Opens session when request arrives
-    - Yields it to your route function
-    - Closes it automatically when request is done
-    
-    'async with' = open and auto-close (like try/finally)
-    'yield' = pause here, give session to route, come back to close
-    """
+   
     async with AsyncSessionLocal() as session:
         yield session
 
 #  Dependency that protects routes.
-# Any route that adds:  current_user = Depends(get_current_user)becomes a protected route automatically.
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: AsyncSession = Depends(get_db)
