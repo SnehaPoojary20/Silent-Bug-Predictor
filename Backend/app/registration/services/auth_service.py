@@ -6,9 +6,12 @@ from app.models.user import User
 from app.schemas.user import UserCreate
 from app.core.security import hash_password, verify_password
 
+
+
 async def get_user_by_email(db: AsyncSession, email: str) -> User | None:
     result=db.execute(select(User).where(User.email==email))
     return result.scalar_one_or_none()
+
 
 
 async def register_user(db: AsyncSession, user_in: UserCreate)-> User:
@@ -50,12 +53,6 @@ async def authenticate_user(db: AsyncSession, email: str, password: str) -> User
         )
 
      return user
-
-
-
-
-
-
 
 
 
