@@ -13,7 +13,6 @@ from app.db.session import AsyncSessionLocal
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 # Tells FastAPI: "look for a Bearer token in the Authorization header"
-# tokenUrl is the endpoint used by the /docs UI login form
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
@@ -52,7 +51,7 @@ async def get_current_user(
     return user
 
 
-# ── POST 
+# POST 
 @router.post(
     "/register",
     response_model=UserOut,

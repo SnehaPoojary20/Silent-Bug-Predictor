@@ -22,3 +22,15 @@ async def register(
     return user
 
 
+
+@router.post("/login", response_model= TokenOut)
+async def login(
+    user_in: UserCreate,
+    db: AsyncSession= Depends(get_db),
+):
+    user = await authenticate_user(db,user_in.email,user_in.password)
+
+    # "sub" = subject = who is this token about?
+    token = create_access_token({"sub":str(user.id)})
+    return("access_token":token, "token_type": "bearer")
+    
