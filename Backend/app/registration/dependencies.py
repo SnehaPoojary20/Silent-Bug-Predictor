@@ -26,7 +26,7 @@ from app.db.session import AsyncSessionLocal
 from app.models.user import User
 from app.core.security import decode_token
 
-# This tells FastAPI: "JWT token comes from /auth/login endpoint"
+
 # When a route needs auth, FastAPI automatically reads the
 # Authorization: Bearer <token> header
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
