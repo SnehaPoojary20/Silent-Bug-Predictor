@@ -32,4 +32,37 @@ async def analyze_repo(
     return analysis
 
 
-    
+
+@router.get("/", response_model=list[AnalyzeResponse])
+async def list_analyses(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    analyses = await get_user_analyses(db, current_user.id)
+    return analyses
+
+
+
+@router.get("/{analysis_id}", response_model=AnalyzeResponse)
+async def get_analysis(
+    analysis_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    result = await db.execute(
+        select(Analysis)
+        .where(
+            Analysis.id == analysis_id,
+            Analysis.user_id == current_user.id,
+        )
+        .options(selectinload(Analysis.results))  # load file results too
+    )
+    analysis = result.scalar_one_or_none()
+
+    if analysis is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Analysis not found",
+        )
+
+    return analysis
