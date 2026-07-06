@@ -16,6 +16,12 @@ from app.core.exceptions import (
     validation_exception_handler,
     unhandled_exception_handler,
 )
+from slowapi.errors import RateLimitExceeded
+from slowapi import _rate_limit_exceeded_handler
+from app.core.rate_limit import limiter
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 setup_logging()
 logger = logging.getLogger("app")
@@ -48,7 +54,7 @@ app.add_middleware(
 
 
 app.middleware("http")(log_requests)
-
+app.middleware("http")(add_security_headers)
 
 app.add_exception_handler(StarletteHTTPException, http_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
