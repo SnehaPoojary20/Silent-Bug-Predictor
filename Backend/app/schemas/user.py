@@ -6,12 +6,14 @@ class UserCreate(BaseModel):
     password: str
     github_account: str
 
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
 
 class UserOut(BaseModel):
     id: int
     email: EmailStr
     github_account: str
 
-
-class Config:
-    from_attributes = True 
+    class Config:
+        from_attributes = True
