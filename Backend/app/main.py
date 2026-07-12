@@ -1,57 +1,51 @@
-# app/main.py
 import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.exceptions import RequestValidationError
+from slowapi.errors import RateLimitExceeded
+from slowapi import _rate_limit_exceeded_handler
 
 from app.api.routes import auth, analysis
 from app.db.session import engine, Base
+import app.models  
 from app.core.config import settings
 from app.core.logging_config import setup_logging
-from app.core.middleware import log_requests
+from app.core.middleware import log_requests, add_security_headers
 from app.core.exceptions import (
     http_exception_handler,
     validation_exception_handler,
     unhandled_exception_handler,
 )
-from slowapi.errors import RateLimitExceeded
-from slowapi import _rate_limit_exceeded_handler
 from app.core.rate_limit import limiter
-
-app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 setup_logging()
 logger = logging.getLogger("app")
 
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # STARTUP
     logger.info("Starting up Silent Bug Predictor...")
-  
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
-    # SHUTDOWN
     logger.info("Shutting down...")
     await engine.dispose()
 
 
 app = FastAPI(title="Silent Bug Predictor", lifespan=lifespan)
 
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,   # e.g. ["https://yourfrontend.com"]
+    allow_origins=settings.ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Authorization", "Content-Type"],
 )
-
 
 app.middleware("http")(log_requests)
 app.middleware("http")(add_security_headers)

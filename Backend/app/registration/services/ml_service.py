@@ -4,7 +4,7 @@ import pickle
 from pathlib import Path
 
 
-MODEL_PATH = Path("app/ml_model/xgboost_model.pkl")
+MODEL_PATH = Path("app/models/xgboost_model.pkl")
 
 
 def get_risk_level(probability: float) -> str:

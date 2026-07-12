@@ -13,9 +13,9 @@ class FileResult(BaseModel):
     risk_level: str
 
     class Config:
-        from_attributes = True  
+        from_attributes = True
 
-#The FULL receipt sent back after /analyze finishes.
+
 class AnalyzeResponse(BaseModel):
     id: int
     owner: str
