@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from app.models.analysis import Analysis, AnalysisResult
 from app.services.github_service import fetch_repo_data
@@ -13,11 +14,11 @@ async def run_analysis(
     repo: str,
     user_id: int,
 ) -> Analysis:
-    
-    # Step 1 — GitHub
+
+    # Step 1 - GitHub
     raw_files = await fetch_repo_data(owner, repo)
 
-    # Steps 2 & 3 — AST + ML for each file
+    # Steps 2 & 3 - AST + ML for each file
     enriched = []
     for file_data in raw_files:
 
@@ -36,10 +37,10 @@ async def run_analysis(
             "risk_level":      risk_level,
         })
 
-    # Step 4 — Sort: highest risk first (most useful to the user)
+    # Step 4 - Sort: highest risk first (most useful to the user)
     enriched.sort(key=lambda x: x["bug_probability"], reverse=True)
 
-    # Step 5 — Save to PostgreSQL
+    # Step 5 - Save to PostgreSQL
     # First create the "header" row
     analysis = Analysis(
         owner=owner,
@@ -48,9 +49,8 @@ async def run_analysis(
         user_id=user_id,
     )
     db.add(analysis)
-    await db.flush()   # gives us analysis.id without full commit yet
+    await db.flush()  
 
-    # Then create one "line item" row per file
     for item in enriched:
         db.add(AnalysisResult(
             analysis_id=analysis.id,
@@ -60,20 +60,24 @@ async def run_analysis(
         ))
 
     await db.commit()
-    await db.refresh(analysis)  
 
-    return analysis
+    result = await db.execute(
+        select(Analysis)
+        .where(Analysis.id == analysis.id)
+        .options(selectinload(Analysis.results))
+    )
+    return result.scalar_one()
 
 
 async def get_user_analyses(
     db: AsyncSession,
     user_id: int,
 ) -> list[Analysis]:
-    #Returns all past analyses for this user, newest first.
-
+    
     result = await db.execute(
         select(Analysis)
         .where(Analysis.user_id == user_id)
+        .options(selectinload(Analysis.results))
         .order_by(Analysis.created_at.desc())
     )
     return result.scalars().all()
@@ -84,11 +88,13 @@ async def get_analysis_by_id(
     analysis_id: int,
     user_id: int,
 ) -> Analysis | None:
-    
+
     result = await db.execute(
-        select(Analysis).where(
+        select(Analysis)
+        .where(
             Analysis.id == analysis_id,
             Analysis.user_id == user_id,
         )
+        .options(selectinload(Analysis.results))
     )
     return result.scalar_one_or_none()
