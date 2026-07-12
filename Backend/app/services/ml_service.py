@@ -6,7 +6,7 @@ from pathlib import Path
 
 logger = logging.getLogger("app.ml_service")
 
-MODEL_PATH = Path("app/models/xgboost_model.pkl")
+MODEL_PATH = Path("models/xgboost_model.pkl")
 
 
 def get_risk_level(probability: float) -> str:

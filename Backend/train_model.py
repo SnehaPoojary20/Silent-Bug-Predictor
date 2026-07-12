@@ -3,11 +3,14 @@ import numpy as np
 import xgboost as xgb
 import pickle
 from pathlib import Path
+import os
 
 import httpx
 from dotenv import load_dotenv
 
 load_dotenv()  # loads .env before app.core.config reads GITHUB_TOKEN
+
+print("TOKEN LOADED:", repr(os.getenv("GITHUB_TOKEN"))[:15], "...")
 
 from app.services.github_service import (
     get_default_branch,
