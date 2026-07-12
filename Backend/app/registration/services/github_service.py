@@ -1,3 +1,4 @@
+import re
 from datetime import datetime, timezone
 import httpx
 from app.core.config import settings
@@ -9,6 +10,10 @@ HEADERS = {
     "Accept": "application/vnd.github+json",
 }
 
+BUG_KEYWORDS = re.compile(
+    r"\b(fix|bug|error|crash|issue|patch|broken|fault|defect)\b",
+    re.IGNORECASE,
+)
 
 
 async def get_default_branch(client: httpx.AsyncClient, owner: str, repo: str) -> str:
@@ -16,7 +21,6 @@ async def get_default_branch(client: httpx.AsyncClient, owner: str, repo: str) -
     response = await client.get(url, headers=HEADERS)
     response.raise_for_status()
     return response.json()["default_branch"]
-
 
 
 async def get_python_files(client: httpx.AsyncClient, owner: str, repo: str, branch: str) -> list[str]:
@@ -33,13 +37,11 @@ async def get_python_files(client: httpx.AsyncClient, owner: str, repo: str, bra
     ]
 
 
-
 async def get_file_content(client: httpx.AsyncClient, owner: str, repo: str, path: str, branch: str) -> str:
     url = f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{path}"
     response = await client.get(url, headers=HEADERS)
     response.raise_for_status()
     return response.text
-
 
 
 async def get_commit_stats(client: httpx.AsyncClient, owner: str, repo: str, path: str) -> dict:
@@ -52,15 +54,13 @@ async def get_commit_stats(client: httpx.AsyncClient, owner: str, repo: str, pat
     commits = response.json()
 
     if not commits:
-        # Brand new file, no history yet
         return {"commits": 0, "contributors": 0, "last_modified_days": 0}
- 
+
     authors = set()
     for commit in commits:
         author = commit.get("author")
         if author and author.get("login"):
             authors.add(author["login"])
-        
 
     latest_date_str = commits[0]["commit"]["author"]["date"]
     latest_date = datetime.fromisoformat(latest_date_str.replace("Z", "+00:00"))
@@ -74,9 +74,24 @@ async def get_commit_stats(client: httpx.AsyncClient, owner: str, repo: str, pat
     }
 
 
+async def get_file_bug_label(client: httpx.AsyncClient, owner: str, repo: str, path: str) -> int:
+    
+    url = f"{GITHUB_API_BASE}/repos/{owner}/{repo}/commits"
+    response = await client.get(
+        url, headers=HEADERS, params={"path": path, "per_page": 50}
+    )
+    response.raise_for_status()
+    commits = response.json()
+
+    for commit in commits:
+        message = commit["commit"]["message"]
+        if BUG_KEYWORDS.search(message):
+            return 1
+    return 0
+
 
 async def fetch_repo_data(owner: str, repo: str) -> list[dict]:
-  
+
     async with httpx.AsyncClient() as client:
         branch = await get_default_branch(client, owner, repo)
         files = await get_python_files(client, owner, repo, branch)
@@ -93,16 +108,6 @@ async def fetch_repo_data(owner: str, repo: str) -> list[dict]:
             })
 
         return results
-
-
-
-
-
-
-
-
-
-
 
 
 
