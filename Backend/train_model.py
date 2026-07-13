@@ -3,14 +3,11 @@ import numpy as np
 import xgboost as xgb
 import pickle
 from pathlib import Path
-import os
 
 import httpx
 from dotenv import load_dotenv
 
 load_dotenv()  # loads .env before app.core.config reads GITHUB_TOKEN
-
-print("TOKEN LOADED:", repr(os.getenv("GITHUB_TOKEN"))[:15], "...")
 
 from app.services.github_service import (
     get_default_branch,
@@ -24,17 +21,17 @@ from app.services.ast_service import extract_ast_features
 TRAINING_REPOS = [
     ("pallets", "flask"),
     ("psf", "requests"),
-    ("fastapi", "fastapi"),  
+    ("fastapi", "fastapi"),
 ]
 
 FILES_PER_REPO = 60
-MODEL_PATH = Path("app/models/xgboost_model.pkl")
+MODEL_PATH = Path("models/xgboost_model.pkl")
 
 
 async def build_dataset():
     X, y = [], []
 
-    async with httpx.AsyncClient(timeout=30) as client:
+    async with httpx.AsyncClient(timeout=30, follow_redirects=True) as client:
         for owner, repo in TRAINING_REPOS:
             print(f"Fetching {owner}/{repo} ...")
             branch = await get_default_branch(client, owner, repo)
