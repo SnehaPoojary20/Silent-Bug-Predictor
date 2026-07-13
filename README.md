@@ -4,6 +4,8 @@ An end-to-end ML system that analyzes GitHub repositories and ranks files by how
 
 GitHub: github.com/SnehaPoojary20/Silent-Bug-Predictor
 
+Live: https://silent-bug-predictor.vercel.app/home
+
 ### The Problem
 
 Code review is expensive, and teams often don't know where to focus it. Bug-prone files tend to share measurable characteristics: they're touched frequently by many contributors, they're structurally complex, and they accrue changes rapidly. This project turns those signals into a ranked, actionable score per file.
