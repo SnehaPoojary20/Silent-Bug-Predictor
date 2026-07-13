@@ -24,7 +24,7 @@ from app.services.ast_service import extract_ast_features
 TRAINING_REPOS = [
     ("pallets", "flask"),
     ("psf", "requests"),
-    ("tiangolo", "fastapi"),
+    ("fastapi", "fastapi"),  
 ]
 
 FILES_PER_REPO = 60
