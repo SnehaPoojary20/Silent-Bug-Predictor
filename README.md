@@ -4,7 +4,7 @@ An end-to-end ML system that analyzes GitHub repositories and ranks files by how
 
 GitHub: github.com/SnehaPoojary20/Silent-Bug-Predictor
 
-Live: https://silent-bug-predictor.vercel.app/home
+Live: https://silent-bug-predictor.vercel.app/
 
 ### The Problem
 
