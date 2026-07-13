@@ -75,7 +75,7 @@ async def get_commit_stats(client: httpx.AsyncClient, owner: str, repo: str, pat
 
 
 async def get_file_bug_label(client: httpx.AsyncClient, owner: str, repo: str, path: str) -> int:
-    
+
     url = f"{GITHUB_API_BASE}/repos/{owner}/{repo}/commits"
     response = await client.get(
         url, headers=HEADERS, params={"path": path, "per_page": 50}
@@ -92,7 +92,7 @@ async def get_file_bug_label(client: httpx.AsyncClient, owner: str, repo: str, p
 
 async def fetch_repo_data(owner: str, repo: str) -> list[dict]:
 
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(follow_redirects=True) as client:
         branch = await get_default_branch(client, owner, repo)
         files = await get_python_files(client, owner, repo, branch)
 
