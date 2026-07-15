@@ -16,39 +16,63 @@ const Analyze = () => {
   const [error, setError] = useState("");
   const [analyzed, setAnalyzed] = useState("");
 
-  const handleAnalyze = async () => {
-    if (!repoName.trim()) return;
+const handleAnalyze = async () => {
+  if (!repoName.trim()) return;
 
-    setLoading(true);
-    setError("");
-    setResults([]);
+  setLoading(true);
+  setError("");
+  setResults([]);
 
-    try {
-      const formatted = repoName.replace("https://github.com/", "").trim();
+  try {
+    const formatted = repoName
+      .replace("https://github.com/", "")
+      .replace("http://github.com/", "")
+      .trim();
 
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/v1/predict?repo_name=${formatted}`,
-        { method: "POST" }
-      );
+    const parts = formatted.split("/");
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || "Failed to analyze repo");
-      }
-
-      const sorted = data.results
-        .sort((a, b) => b.risk_score - a.risk_score)
-        .slice(0, 10);
-
-      setResults(sorted);
-      setAnalyzed(formatted);
-    } catch (err) {
-      setError(err.message);
+    if (parts.length < 2) {
+      throw new Error("Please enter a valid GitHub repository.");
     }
 
-    setLoading(false);
-  };
+    const owner = parts[0];
+    const repo = parts[1];
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      throw new Error("Please login first.");
+    }
+
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/analysis/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          owner,
+          repo,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.detail || "Analysis failed.");
+    }
+
+    setResults(data.results);
+    setAnalyzed(`${owner}/${repo}`);
+  } catch (err) {
+    setError(err.message);
+  }
+
+  setLoading(false);
+};
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") handleAnalyze();
