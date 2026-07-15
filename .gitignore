@@ -13,7 +13,6 @@ build/
 # Virtual Environment
 venv/
 .env
-.env.*
 
 # ML Models & Data
 data/*.pkl
@@ -27,11 +26,6 @@ npm-debug.log
 yarn-error.log
 dist/
 build/
-
-# Frontend Environment Files
-Frontend/.env
-Frontend/.env.*
-!Frontend/.env.example
 
 # ===============================
 # Logs
