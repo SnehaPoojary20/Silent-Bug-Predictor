@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { isLoggedIn, logout } from "../../services/Auth";
 import "./Navbar.css";
 
 const Navbar = () => {
@@ -45,26 +46,34 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="navbar__right">
-          <a
-            href="https://github.com/SnehaPoojary20/Silent-Bug-Predictor"
-            target="_blank"
-            rel="noreferrer"
-            className="navbar__cta"
-          >
-            <span className="navbar__cta-dot" />
-            Analyze Repo
-          </a>
-          <button
-            className="navbar__burger"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Toggle menu"
-          >
-            <span />
-            <span />
-            <span />
-          </button>
-        </div>
+       <div className="navbar__right">
+            {isLoggedIn() ? (
+            <button
+              className="navbar__cta"
+              onClick={() => {
+              logout();
+              window.location.href = "/login";
+         }}
+         >
+         <span className="navbar__cta-dot" />
+         Log Out
+        </button>
+       ) : (
+       <Link to="/login" className="navbar__cta">
+      <span className="navbar__cta-dot" />
+      Log In
+    </Link>
+     )}
+    <button
+    className="navbar__burger"
+    onClick={() => setMenuOpen(!menuOpen)}
+    aria-label="Toggle menu"
+  >
+    <span />
+    <span />
+    <span />
+  </button>
+</div>
 
       </div>
     </nav>

@@ -4,10 +4,11 @@ import Home from './Components/Home/Home.jsx';
 import Navbar from './Components/Navbar/Navbar.jsx';
 import Product from './Components/Product/Product.jsx';
 import Working from './Components/Working/Working.jsx';
-import Analyze from "./Components/Analyze/Analyze.jsx"
-import Docs from "./Components/Docs/Docs.jsx"
+import Analyze from "./Components/Analyze/Analyze.jsx";
+import Docs from "./Components/Docs/Docs.jsx";
+import Login from "./Components/Login/Login.jsx";
+import Register from "./Components/Register/Register.jsx";
 import Footer from './Components/Footer/Footer.jsx';
-
 
 function App() {
   return (
@@ -20,7 +21,8 @@ function App() {
         <Route path="/working" element={<Working />} />
         <Route path="/analyze" element={<Analyze />} />
         <Route path="/docs" element={<Docs />} />
-
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
 
       <Footer />
