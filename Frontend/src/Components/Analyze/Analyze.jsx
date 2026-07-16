@@ -168,8 +168,8 @@ const handleAnalyze = async () => {
 
             <div className="results__list">
               {results.map((item, index) => {
-                const risk = getRisk(item.risk_score);
-                const pct = (item.risk_score * 100).toFixed(1);
+                const risk = getRisk(item.bug_probability);
+                const pct = (item.bug_probability * 100).toFixed(1);
                 return (
                   <div key={index} className="result-row">
                     <div className="result-row__rank">#{index + 1}</div>
@@ -184,7 +184,7 @@ const handleAnalyze = async () => {
                           <div
                             className="result-row__fill"
                             style={{
-                              width: `${item.risk_score * 100}%`,
+                              width: `${item.bug_probability * 100}%`,
                               background: risk.color,
                             }}
                           />
