@@ -6,6 +6,7 @@ export async function register(email, password, githubAccount) {
     password,
     github_account: githubAccount,
   });
+
   return response.data;
 }
 
@@ -15,8 +16,9 @@ export async function login(email, password) {
     password,
   });
 
-  if (response.data?.access_token) {
-    localStorage.setItem("token", response.data.access_token);
+  const token = response.data?.access_token;
+  if (token) {
+    localStorage.setItem("token", token);
   }
 
   return response.data;
@@ -27,5 +29,5 @@ export function logout() {
 }
 
 export function isLoggedIn() {
-  return !!localStorage.getItem("token");
+  return Boolean(localStorage.getItem("token"));
 }
