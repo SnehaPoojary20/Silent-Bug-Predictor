@@ -4,17 +4,38 @@ import "./Docs.css";
 const ENDPOINTS = [
   {
     method: "POST",
-    path: "/predict",
+    path: "/auth/register",
+    desc: "Create a new user account",
+    params: 'JSON body: { email, password, github_account }',
+    response: '{ id, email, github_account }',
+  },
+  {
+    method: "POST",
+    path: "/auth/login",
+    desc: "Authenticate user and receive JWT access token",
+    params: 'JSON body: { email, password }',
+    response: '{ access_token, token_type }',
+  },
+  {
+    method: "POST",
+    path: "/analysis/",
     desc: "Submit a GitHub repository for bug-risk analysis",
-    params: "repo_name: string (query param)",
-    response: '{ results: [{ file, risk_score }] }',
+    params: 'JSON body: { owner, repo }',
+    response: '{ id, owner, repo, total_files, created_at, results: [{ file_name, bug_probability, risk_level }] }',
+  },
+  {
+    method: "GET",
+    path: "/analysis/",
+    desc: "List all analyses for the logged-in user",
+    params: "Authorization: Bearer <token>",
+    response: '[{ id, owner, repo, total_files, created_at, results }]',
   },
   {
     method: "GET",
     path: "/health",
-    desc: "Health check — returns model load status",
+    desc: "Health check",
     params: "None",
-    response: '{ status, model_loaded, timestamp }',
+    response: '{ status: "ok" }',
   },
 ];
 
@@ -22,10 +43,8 @@ const STACK = [
   { label: "Language", value: "Python 3.11" },
   { label: "Backend", value: "FastAPI + Uvicorn" },
   { label: "ML Model", value: "XGBoost Classifier" },
-  { label: "Data", value: "Pandas DataFrame" },
-  { label: "GitHub Data", value: "PyGithub REST API" },
+  { label: "GitHub Data", value: "GitHub REST API" },
   { label: "Serialization", value: "Pydantic v2" },
-  { label: "Container", value: "Docker" },
   { label: "Frontend", value: "React.js + Vite" },
 ];
 
@@ -39,12 +58,10 @@ const Docs = () => {
         <div className="section-eyebrow">API Reference</div>
         <h1 className="section-title">Developer Docs</h1>
         <p className="section-body">
-          All endpoints served over FastAPI. Run locally at{" "}
-          <code className="inline-code">http://127.0.0.1:8000</code> or
-          deploy via Docker.
+          All endpoints are served by FastAPI. Run locally at{" "}
+          <code className="inline-code">http://127.0.0.1:8000</code> and point the frontend to your Render backend URL in production.
         </p>
 
-        {/* Endpoints */}
         <div className="docs__section-label">Endpoints</div>
         <div className="docs__endpoints">
           <div className="endpoints__tabs">
@@ -75,7 +92,6 @@ const Docs = () => {
           </div>
         </div>
 
-        {/* Tech Stack */}
         <div className="docs__section-label" style={{ marginTop: "48px" }}>Tech Stack</div>
         <div className="docs__stack">
           {STACK.map(({ label, value }) => (
@@ -86,7 +102,6 @@ const Docs = () => {
           ))}
         </div>
 
-        {/* Setup */}
         <div className="docs__section-label" style={{ marginTop: "48px" }}>Local Setup</div>
         <div className="docs__code-block">
           <div className="code-block__bar">
@@ -101,11 +116,11 @@ python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 
-# Frontend (new terminal)
+# Frontend
 cd Frontend
-npm install && npm run dev`}</pre>
+npm install
+npm run dev`}</pre>
         </div>
-
       </div>
     </section>
   );
