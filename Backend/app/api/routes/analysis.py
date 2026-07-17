@@ -1,12 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException , status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
-from sqlalchemy import select
 
 from app.db.dependencies import get_db, get_current_user
 from app.models.user import User
 from app.models.analysis import Analysis
-from app.schemas.analysis import AnalyzeRequest, AnalyzeResponse, FileResult
+from app.schemas.analysis import AnalyzeRequest, AnalyzeResponse
 from app.services.analysis_service import (
     run_analysis,
     get_user_analyses,
@@ -16,10 +14,9 @@ from app.services.analysis_service import (
 router = APIRouter()
 
 
-
-@router.post("/",response_model=AnalyzeResponse, status_code=201)
+@router.post("/", response_model=AnalyzeResponse, status_code=status.HTTP_201_CREATED)
 async def analyze_repo(
-    request:AnalyzeRequest,
+    request: AnalyzeRequest,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -32,15 +29,12 @@ async def analyze_repo(
     return analysis
 
 
-
 @router.get("/", response_model=list[AnalyzeResponse])
 async def list_analyses(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    analyses = await get_user_analyses(db, current_user.id)
-    return analyses
-
+    return await get_user_analyses(db, current_user.id)
 
 
 @router.get("/{analysis_id}", response_model=AnalyzeResponse)
@@ -49,20 +43,10 @@ async def get_analysis(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    result = await db.execute(
-        select(Analysis)
-        .where(
-            Analysis.id == analysis_id,
-            Analysis.user_id == current_user.id,
-        )
-        .options(selectinload(Analysis.results))  # load file results too
-    )
-    analysis = result.scalar_one_or_none()
-
+    analysis = await get_analysis_by_id(db, analysis_id, current_user.id)
     if analysis is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Analysis not found",
         )
-
     return analysis
