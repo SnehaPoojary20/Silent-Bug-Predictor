@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     ALLOWED_ORIGINS: list[str] = [
         "http://localhost:5173",
         "http://localhost:3000",
+        "https://silent-bug-predictor.vercel.app",
     ]
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")

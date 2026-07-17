@@ -3,7 +3,7 @@ import "./Analyze.css";
 
 const RISK_LEVELS = [
   { label: "High Risk", color: "#ff5f56", min: 0.7 },
-  { label: "Medium Risk", color: "#ffbd2e", min: 0.3 },
+  { label: "Medium Risk", color: "#ffbd2e", min: 0.4 },
   { label: "Low Risk", color: "#27c93f", min: 0 },
 ];
 
@@ -16,63 +16,60 @@ const Analyze = () => {
   const [error, setError] = useState("");
   const [analyzed, setAnalyzed] = useState("");
 
-const handleAnalyze = async () => {
-  if (!repoName.trim()) return;
+  const handleAnalyze = async () => {
+    const trimmed = repoName.trim();
+    if (!trimmed) return;
 
-  setLoading(true);
-  setError("");
-  setResults([]);
+    setLoading(true);
+    setError("");
+    setResults([]);
 
-  try {
-    const formatted = repoName
-      .replace("https://github.com/", "")
-      .replace("http://github.com/", "")
-      .trim();
+    try {
+      const formatted = trimmed
+        .replace(/^https?:\/\/github\.com\//, "")
+        .replace(/\/$/, "");
 
-    const parts = formatted.split("/");
+      const parts = formatted.split("/");
+      if (parts.length < 2 || !parts[0] || !parts[1]) {
+        throw new Error("Please enter a valid GitHub repository.");
+      }
 
-    if (parts.length < 2) {
-      throw new Error("Please enter a valid GitHub repository.");
-    }
+      const owner = parts[0];
+      const repo = parts[1];
+      const token = localStorage.getItem("token");
 
-    const owner = parts[0];
-    const repo = parts[1];
+      if (!token) {
+        throw new Error("Please login first.");
+      }
 
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      throw new Error("Please login first.");
-    }
-
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/analysis/`,
-      {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/analysis/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          owner,
-          repo,
-        }),
+        body: JSON.stringify({ owner, repo }),
+      });
+
+      let data = {};
+      try {
+        data = await response.json();
+      } catch {
+        data = {};
       }
-    );
 
-    const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.detail || data.error || "Analysis failed.");
+      }
 
-    if (!response.ok) {
-      throw new Error(data.detail || "Analysis failed.");
+      setResults(Array.isArray(data.results) ? data.results : []);
+      setAnalyzed(`${owner}/${repo}`);
+    } catch (err) {
+      setError(err.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
     }
-
-    setResults(data.results);
-    setAnalyzed(`${owner}/${repo}`);
-  } catch (err) {
-    setError(err.message);
-  }
-
-  setLoading(false);
-};
+  };
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") handleAnalyze();
@@ -81,18 +78,14 @@ const handleAnalyze = async () => {
   return (
     <section className="analyze">
       <div className="analyze__inner">
-
-        {/* Header */}
         <div className="analyze__header">
           <div className="section-eyebrow">Prediction Engine</div>
           <h1 className="analyze__title">Analyze Repository</h1>
           <p className="analyze__subtitle">
-            Paste a GitHub repository URL. We scan commit history and structural
-            complexity to surface your highest-risk files.
+            Paste a GitHub repository URL. We scan commit history and structural complexity to surface your highest-risk files.
           </p>
         </div>
 
-        {/* Input */}
         <div className="analyze__input-wrap">
           <div className="analyze__input-box">
             <span className="analyze__input-icon">⬡</span>
@@ -131,7 +124,6 @@ const handleAnalyze = async () => {
           )}
         </div>
 
-        {/* Loading state */}
         {loading && (
           <div className="analyze__scanning">
             <div className="scanning__steps">
@@ -145,15 +137,13 @@ const handleAnalyze = async () => {
           </div>
         )}
 
-        {/* Results */}
         {results.length > 0 && (
           <div className="analyze__results">
             <div className="results__header">
               <div>
                 <h2 className="results__title">Risk Analysis Complete</h2>
                 <p className="results__meta">
-                  Repo: <span className="results__repo">{analyzed}</span> ·{" "}
-                  {results.length} files ranked
+                  Repo: <span className="results__repo">{analyzed}</span> · {results.length} files ranked
                 </p>
               </div>
               <div className="results__legend">
@@ -173,11 +163,10 @@ const handleAnalyze = async () => {
                 return (
                   <div key={index} className="result-row">
                     <div className="result-row__rank">#{index + 1}</div>
-
                     <div className="result-row__info">
                       <div className="result-row__file">
                         <span className="result-row__file-icon">📄</span>
-                        {item.file}
+                        {item.file_name}
                       </div>
                       <div className="result-row__bar-wrap">
                         <div className="result-row__bar">
@@ -191,7 +180,6 @@ const handleAnalyze = async () => {
                         </div>
                       </div>
                     </div>
-
                     <div className="result-row__right">
                       <span
                         className="result-row__badge"
@@ -214,25 +202,19 @@ const handleAnalyze = async () => {
           </div>
         )}
 
-        {/* Empty state */}
         {!loading && results.length === 0 && !error && (
           <div className="analyze__empty">
             <div className="empty__icon">⬡</div>
-            <p className="empty__text">
-              Enter a GitHub repository to begin analysis
-            </p>
+            <p className="empty__text">Enter a GitHub repository to begin analysis</p>
             <p className="empty__hint">
-              Example: <code>tensorflow/tensorflow</code> or{" "}
-              <code>facebook/react</code>
+              Example: <code>tensorflow/tensorflow</code> or <code>facebook/react</code>
             </p>
           </div>
         )}
 
         <p className="analyze__note">
-          Fetches up to 200 commits · Ranks by commit churn, contributor count,
-          file depth, and days since last modified
+          Fetches up to 200 commits · Ranks by commit churn, contributor count, file depth, and days since last modified
         </p>
-
       </div>
     </section>
   );
