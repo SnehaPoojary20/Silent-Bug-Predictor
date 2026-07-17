@@ -1,21 +1,20 @@
-import numpy as np
-import xgboost as xgb
-import pickle
 import logging
 from pathlib import Path
+import pickle
+import numpy as np
+import xgboost as xgb
 
 logger = logging.getLogger("app.ml_service")
-
 MODEL_PATH = Path("models/xgboost_model.pkl")
+_model = None
 
 
 def get_risk_level(probability: float) -> str:
     if probability >= 0.7:
         return "HIGH"
-    elif probability >= 0.4:
+    if probability >= 0.4:
         return "MEDIUM"
-    else:
-        return "LOW"
+    return "LOW"
 
 
 def _build_feature_vector(file_data: dict) -> list[float]:
@@ -29,24 +28,24 @@ def _build_feature_vector(file_data: dict) -> list[float]:
     ]
 
 
-def _load_model() -> xgb.XGBClassifier:
+def _load_model():
+    global _model
+    if _model is not None:
+        return _model
+
     if not MODEL_PATH.exists() or MODEL_PATH.stat().st_size == 0:
-        raise RuntimeError(
-            f"No trained model found at {MODEL_PATH}. "
-            f"Run `python train_model.py` from the Backend/ folder first."
-        )
+        raise RuntimeError(f"Missing model file at {MODEL_PATH}")
+
     with open(MODEL_PATH, "rb") as f:
-        model = pickle.load(f)
-    logger.info(f"Loaded trained model from {MODEL_PATH}")
-    return model
+        _model = pickle.load(f)
 
-
-_model = _load_model()
+    logger.info("Loaded trained model from %s", MODEL_PATH)
+    return _model
 
 
 def predict_bug_probability(file_data: dict) -> tuple[float, str]:
+    model = _load_model()
     features = _build_feature_vector(file_data)
-    X = np.array([features])
-    probability = float(_model.predict_proba(X)[0][1])
-    risk_level = get_risk_level(probability)
-    return probability, risk_level
+    X = np.array([features], dtype=float)
+    probability = float(model.predict_proba(X)[0][1])
+    return probability, get_risk_level(probability)
