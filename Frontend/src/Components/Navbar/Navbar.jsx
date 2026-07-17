@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { isLoggedIn, logout } from "../../services/Auth";
 import "./Navbar.css";
 
@@ -7,6 +7,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -16,10 +17,14 @@ const Navbar = () => {
 
   const isActive = (path) => location.pathname === path;
 
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
+
   return (
     <nav className={`navbar ${scrolled ? "navbar--scrolled" : ""}`}>
       <div className="navbar__inner">
-
         <Link to="/home" className="navbar__brand">
           <span className="navbar__brand-icon">⬡</span>
           <span className="navbar__brand-text">
@@ -46,35 +51,29 @@ const Navbar = () => {
           ))}
         </div>
 
-       <div className="navbar__right">
-            {isLoggedIn() ? (
-            <button
-              className="navbar__cta"
-              onClick={() => {
-              logout();
-              window.location.href = "/login";
-         }}
-         >
-         <span className="navbar__cta-dot" />
-         Log Out
-        </button>
-       ) : (
-       <Link to="/login" className="navbar__cta">
-      <span className="navbar__cta-dot" />
-      Log In
-    </Link>
-     )}
-    <button
-    className="navbar__burger"
-    onClick={() => setMenuOpen(!menuOpen)}
-    aria-label="Toggle menu"
-  >
-    <span />
-    <span />
-    <span />
-  </button>
-</div>
+        <div className="navbar__right">
+          {isLoggedIn() ? (
+            <button className="navbar__cta" onClick={handleLogout}>
+              <span className="navbar__cta-dot" />
+              Log Out
+            </button>
+          ) : (
+            <Link to="/login" className="navbar__cta">
+              <span className="navbar__cta-dot" />
+              Log In
+            </Link>
+          )}
 
+          <button
+            className="navbar__burger"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Toggle menu"
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+        </div>
       </div>
     </nav>
   );

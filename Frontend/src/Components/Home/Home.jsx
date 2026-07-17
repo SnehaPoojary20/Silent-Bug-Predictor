@@ -4,7 +4,7 @@ import "./Home.css";
 
 const STATS = [
   { value: "75%", label: "Prediction Precision" },
-  { value: "4", label: "Engineered Features" },
+  { value: "6", label: "Engineered Features" },
   { value: "<3s", label: "Analysis Time" },
   { value: "200", label: "Commits Scanned" },
 ];
@@ -15,6 +15,7 @@ const Home = () => {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+
     const ctx = canvas.getContext("2d");
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
@@ -29,20 +30,25 @@ const Home = () => {
     }));
 
     let animId;
+
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       particles.forEach((p) => {
         p.x += p.vx;
         p.y += p.vy;
+
         if (p.x < 0) p.x = canvas.width;
         if (p.x > canvas.width) p.x = 0;
         if (p.y < 0) p.y = canvas.height;
         if (p.y > canvas.height) p.y = 0;
+
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(0, 255, 136, ${p.alpha})`;
         ctx.fill();
       });
+
       particles.forEach((p, i) => {
         particles.slice(i + 1).forEach((q) => {
           const d = Math.hypot(p.x - q.x, p.y - q.y);
@@ -56,16 +62,16 @@ const Home = () => {
           }
         });
       });
+
       animId = requestAnimationFrame(draw);
     };
+
     draw();
     return () => cancelAnimationFrame(animId);
   }, []);
 
   return (
     <main className="home">
-
-      {/* HERO */}
       <section className="hero">
         <canvas ref={canvasRef} className="hero__canvas" />
         <div className="hero__grid-overlay" />
@@ -84,8 +90,8 @@ const Home = () => {
 
           <p className="hero__subtitle">
             AI system that scans GitHub repos and surfaces the files most likely to
-            contain bugs — using commit churn, structural complexity, and
-            contributor patterns.
+            contain bugs — using commit churn, structural complexity, and contributor
+            patterns.
           </p>
 
           <div className="hero__actions">
@@ -104,19 +110,18 @@ const Home = () => {
               <span className="terminal__title">bug-predictor ~</span>
             </div>
             <div className="terminal__body">
-              <p><span className="terminal__prompt">$</span> POST /predict?repo_name=user/repo</p>
-              <p className="terminal__response">{"{"}</p>
-              <p className="terminal__response">&nbsp;&nbsp;"auth/login.py": <span className="terminal__high">0.87</span>,</p>
-              <p className="terminal__response">&nbsp;&nbsp;"db_utils.py": <span className="terminal__med">0.61</span>,</p>
-              <p className="terminal__response">&nbsp;&nbsp;"api/routes.py": <span className="terminal__low">0.23</span></p>
-              <p className="terminal__response">{"}"}</p>
+              <p><span className="terminal__prompt">$</span> POST /analysis/</p>
+              <p className="terminal__response">{`{`}</p>
+              <p className="terminal__response">&nbsp;&nbsp;"owner": "facebook",</p>
+              <p className="terminal__response">&nbsp;&nbsp;"repo": "react"</p>
+              <p className="terminal__response">{`}`}</p>
+              <p className="terminal__response">→ ranked files by bug probability</p>
               <p className="terminal__cursor">▋</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* STATS */}
       <section className="stats">
         <div className="stats__inner">
           {STATS.map(({ value, label }) => (
@@ -128,23 +133,34 @@ const Home = () => {
         </div>
       </section>
 
-      {/* OVERVIEW */}
       <section className="overview">
         <div className="overview__inner">
           <div className="section-eyebrow">Why It Matters</div>
           <h2 className="section-title">Stop Guessing. Start Predicting.</h2>
           <p className="section-body">
             Code review is expensive. Engineers spend hours reviewing files that are
-            statistically low-risk, while truly dangerous files slip through. Silent
-            Bug Predictor quantifies risk using commit history and code structure —
-            so your team focuses where it counts.
+            statistically low-risk, while truly risky files can slip through.
+            Silent Bug Predictor ranks files by model score so your team can focus
+            where it matters most.
           </p>
 
           <div className="overview__cards">
             {[
-              { icon: "🔬", title: "AST Analysis", desc: "Parses Python AST to extract LOC, function count, and cyclomatic complexity without executing code." },
-              { icon: "📊", title: "Commit Intelligence", desc: "Tracks churn, unique contributors, and time-since-modified per file across 200 commits." },
-              { icon: "⚡", title: "XGBoost Model", desc: "Captures interaction effects between complexity and contributor count — signals logistic regression misses." },
+              {
+                icon: "🔬",
+                title: "AST Analysis",
+                desc: "Parses Python AST to extract LOC, function count, and cyclomatic complexity without executing code.",
+              },
+              {
+                icon: "📊",
+                title: "Commit Intelligence",
+                desc: "Tracks churn, unique contributors, and time-since-modified per file across commit history.",
+              },
+              {
+                icon: "⚡",
+                title: "XGBoost Model",
+                desc: "Combines structural and history-based signals into a per-file bug probability score.",
+              },
             ].map(({ icon, title, desc }) => (
               <div key={title} className="overview-card">
                 <div className="overview-card__icon">{icon}</div>
@@ -155,7 +171,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
     </main>
   );
 };
