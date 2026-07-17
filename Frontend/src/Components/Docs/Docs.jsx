@@ -21,14 +21,22 @@ const ENDPOINTS = [
     path: "/analysis/",
     desc: "Submit a GitHub repository for bug-risk analysis",
     params: 'JSON body: { owner, repo }',
-    response: '{ id, owner, repo, total_files, created_at, results: [{ file_name, bug_probability, risk_level }] }',
+    response:
+      '{ id, owner, repo, total_files, created_at, results: [{ file_name, bug_probability, risk_level }] }',
   },
   {
     method: "GET",
     path: "/analysis/",
     desc: "List all analyses for the logged-in user",
     params: "Authorization: Bearer <token>",
-    response: '[{ id, owner, repo, total_files, created_at, results }]',
+    response: "[{ id, owner, repo, total_files, created_at, results }]",
+  },
+  {
+    method: "GET",
+    path: "/analysis/{analysis_id}",
+    desc: "Fetch one analysis by ID",
+    params: "Authorization: Bearer <token>",
+    response: "{ id, owner, repo, total_files, created_at, results }",
   },
   {
     method: "GET",
@@ -59,7 +67,8 @@ const Docs = () => {
         <h1 className="section-title">Developer Docs</h1>
         <p className="section-body">
           All endpoints are served by FastAPI. Run locally at{" "}
-          <code className="inline-code">http://127.0.0.1:8000</code> and point the frontend to your Render backend URL in production.
+          <code className="inline-code">http://127.0.0.1:8000</code> and point
+          the frontend to your Render backend URL in production.
         </p>
 
         <div className="docs__section-label">Endpoints</div>
@@ -92,7 +101,9 @@ const Docs = () => {
           </div>
         </div>
 
-        <div className="docs__section-label" style={{ marginTop: "48px" }}>Tech Stack</div>
+        <div className="docs__section-label" style={{ marginTop: "48px" }}>
+          Tech Stack
+        </div>
         <div className="docs__stack">
           {STACK.map(({ label, value }) => (
             <div key={label} className="stack-row">
@@ -102,7 +113,9 @@ const Docs = () => {
           ))}
         </div>
 
-        <div className="docs__section-label" style={{ marginTop: "48px" }}>Local Setup</div>
+        <div className="docs__section-label" style={{ marginTop: "48px" }}>
+          Local Setup
+        </div>
         <div className="docs__code-block">
           <div className="code-block__bar">
             <span className="code-block__title">bash</span>

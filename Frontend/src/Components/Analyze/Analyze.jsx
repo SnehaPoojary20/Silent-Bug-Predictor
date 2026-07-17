@@ -38,10 +38,7 @@ const Analyze = () => {
       const owner = parts[0];
       const repo = parts[1];
 
-      const res = await api.post("/analysis/", {
-        owner,
-        repo,
-      });
+      const res = await api.post("/analysis/", { owner, repo });
 
       setResults(Array.isArray(res.data?.results) ? res.data.results : []);
       setAnalyzed(`${owner}/${repo}`);
@@ -159,7 +156,7 @@ const Analyze = () => {
                 const pct = (item.bug_probability * 100).toFixed(1);
 
                 return (
-                  <div key={item.id || index} className="result-row">
+                  <div key={item.id || `${item.file_name}-${index}`} className="result-row">
                     <div className="result-row__rank">#{index + 1}</div>
 
                     <div className="result-row__info">
