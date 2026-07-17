@@ -1,24 +1,25 @@
 import logging
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.exceptions import RequestValidationError
-from slowapi.errors import RateLimitExceeded
+from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.api.routes import auth, analysis
-from app.db.session import engine, Base
-import app.models  
 from app.core.config import settings
-from app.core.logging_config import setup_logging
-from app.core.middleware import log_requests, add_security_headers
 from app.core.exceptions import (
     http_exception_handler,
     validation_exception_handler,
     unhandled_exception_handler,
 )
+from app.core.logging_config import setup_logging
+from app.core.middleware import add_security_headers, log_requests
 from app.core.rate_limit import limiter
+from app.db.session import Base, engine
+import app.models
 
 setup_logging()
 logger = logging.getLogger("app")
@@ -43,8 +44,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["Authorization", "Content-Type"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.middleware("http")(log_requests)
