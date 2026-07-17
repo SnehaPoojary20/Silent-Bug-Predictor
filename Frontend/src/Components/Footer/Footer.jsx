@@ -8,7 +8,6 @@ const Footer = () => {
   return (
     <footer className="footer">
       <div className="footer__inner">
-
         <div className="footer__brand">
           <div className="footer__brand-logo">
             <span className="footer__brand-hex">⬡</span>
@@ -60,7 +59,6 @@ const Footer = () => {
             </a>
           </div>
         </div>
-
       </div>
 
       <div className="footer__bottom">

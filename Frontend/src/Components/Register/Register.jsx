@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { register } from "../../services/Auth";
-import "../Login/Login.css"; // reuse same auth styling
+import "../Login/Login.css";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -15,18 +15,19 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess(false);
     setLoading(true);
 
     try {
       await register(email, password, githubAccount);
       setSuccess(true);
-      setTimeout(() => navigate("/login"), 1200);
+      setTimeout(() => navigate("/login", { replace: true }), 1200);
     } catch (err) {
       const detail = err.response?.data?.detail || err.response?.data?.error;
       setError(detail || "Registration failed. Try a different email.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
@@ -84,7 +85,14 @@ const Register = () => {
           )}
 
           {success && (
-            <div className="auth__error" style={{ color: "#00ff88", background: "rgba(0,255,136,0.08)", borderColor: "rgba(0,255,136,0.2)" }}>
+            <div
+              className="auth__error"
+              style={{
+                color: "#00ff88",
+                background: "rgba(0,255,136,0.08)",
+                borderColor: "rgba(0,255,136,0.2)",
+              }}
+            >
               <span>✓</span>
               Account created! Redirecting to login...
             </div>

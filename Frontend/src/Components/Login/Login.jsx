@@ -17,13 +17,13 @@ const Login = () => {
 
     try {
       await login(email, password);
-      navigate("/analyze");
+      navigate("/analyze", { replace: true });
     } catch (err) {
       const detail = err.response?.data?.detail || err.response?.data?.error;
       setError(detail || "Login failed. Check your credentials.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
