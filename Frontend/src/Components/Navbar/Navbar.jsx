@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { isLoggedIn, logout } from "../../services/Auth";
+import { isLoggedIn, logout } from "../../api/auth.js";
 import "./Navbar.css";
 
 const Navbar = () => {
