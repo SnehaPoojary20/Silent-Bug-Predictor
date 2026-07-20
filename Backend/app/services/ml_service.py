@@ -1,10 +1,11 @@
 import logging
 from pathlib import Path
 import pickle
+
 import numpy as np
-import xgboost as xgb
 
 logger = logging.getLogger("app.ml_service")
+
 MODEL_PATH = Path("models/xgboost_model.pkl")
 _model = None
 
