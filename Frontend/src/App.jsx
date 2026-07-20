@@ -9,6 +9,7 @@ import Docs from "./Components/Docs/Docs.jsx";
 import Login from "./Components/Login/Login.jsx";
 import Register from "./Components/Register/Register.jsx";
 import Footer from "./Components/Footer/Footer.jsx";
+import Profile from "./Components/Profile/Profile.jsx";
 import { isLoggedIn } from "./api/auth.js";
 
 function App() {
@@ -25,6 +26,10 @@ function App() {
         <Route path="/docs" element={<Docs />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route
+          path="/profile"
+          element={isLoggedIn() ? <Profile /> : <Navigate to="/login" replace />}
+        />
         <Route
           path="*"
           element={<Navigate to={isLoggedIn() ? "/home" : "/login"} replace />}

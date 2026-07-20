@@ -55,6 +55,15 @@ const Navbar = () => {
               {label}
             </Link>
           ))}
+          {loggedIn && (
+            <Link
+              to="/profile"
+              className={`navbar__link ${isActive("/profile") ? "navbar__link--active" : ""}`}
+              onClick={() => setMenuOpen(false)}
+            >
+              Profile
+            </Link>
+          )}
         </div>
 
         <div className="navbar__right">
