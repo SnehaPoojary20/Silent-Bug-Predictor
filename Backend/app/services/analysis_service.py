@@ -1,12 +1,13 @@
 import logging
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from sqlalchemy.orm import selectinload
+
 from fastapi import HTTPException, status
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.models.analysis import Analysis, AnalysisResult
-from app.services.github_service import fetch_repo_data
 from app.services.ast_service import extract_ast_features
+from app.services.github_service import fetch_repo_data
 from app.services.ml_service import predict_bug_probability
 
 logger = logging.getLogger("app.analysis_service")
@@ -18,15 +19,7 @@ async def run_analysis(
     repo: str,
     user_id: int,
 ) -> Analysis:
-    try:
-        raw_files = await fetch_repo_data(owner, repo)
-    except HTTPException:
-        raise
-    except Exception as exc:
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail=f"Failed to fetch repository data: {exc}",
-        )
+    raw_files = await fetch_repo_data(owner, repo)
 
     enriched = []
     for file_data in raw_files:
@@ -42,7 +35,7 @@ async def run_analysis(
                 }
             )
         except Exception as exc:
-            logger.exception("Failed processing file %s: %s", file_data.get("file_name"), exc)
+            logger.exception("Skipping file %s: %s", file_data.get("file_name"), exc)
             continue
 
     enriched.sort(key=lambda x: x["bug_probability"], reverse=True)
@@ -82,3 +75,25 @@ async def run_analysis(
         .options(selectinload(Analysis.results))
     )
     return result.scalar_one()
+
+
+async def get_user_analyses(db: AsyncSession, user_id: int) -> list[Analysis]:
+    result = await db.execute(
+        select(Analysis)
+        .where(Analysis.user_id == user_id)
+        .options(selectinload(Analysis.results))
+        .order_by(Analysis.created_at.desc())
+    )
+    return result.scalars().all()
+
+
+async def get_analysis_by_id(db: AsyncSession, analysis_id: int, user_id: int) -> Analysis | None:
+    result = await db.execute(
+        select(Analysis)
+        .where(
+            Analysis.id == analysis_id,
+            Analysis.user_id == user_id,
+        )
+        .options(selectinload(Analysis.results))
+    )
+    return result.scalar_one_or_none()
