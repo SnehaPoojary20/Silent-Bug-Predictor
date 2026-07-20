@@ -9,7 +9,7 @@ import Docs from "./Components/Docs/Docs.jsx";
 import Login from "./Components/Login/Login.jsx";
 import Register from "./Components/Register/Register.jsx";
 import Footer from "./Components/Footer/Footer.jsx";
-import { isLoggedIn } from "./api/Auth";
+import { isLoggedIn } from "./api/auth.js";
 
 function App() {
   return (
