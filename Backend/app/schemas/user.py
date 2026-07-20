@@ -1,17 +1,10 @@
+from pydantic import BaseModel, EmailStr, Field
 
-from pydantic import BaseModel, EmailStr, field_validator
 
 class UserCreate(BaseModel):
     email: EmailStr
-    password: str
+    password: str = Field(min_length=8)
     github_account: str
-
-    @field_validator("password")
-    @classmethod
-    def password_must_be_strong(cls, v: str) -> str:
-        if len(v) < 8:
-            raise ValueError("Password must be at least 8 characters")
-        return v
 
 
 class UserLogin(BaseModel):
@@ -19,10 +12,11 @@ class UserLogin(BaseModel):
     password: str
 
 
-class UserOut(BaseModel):
+class UserResponse(BaseModel):
     id: int
     email: EmailStr
     github_account: str
 
-    class Config:
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
