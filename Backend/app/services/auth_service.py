@@ -7,52 +7,41 @@ from app.schemas.user import UserCreate
 from app.core.security import hash_password, verify_password
 
 
-
 async def get_user_by_email(db: AsyncSession, email: str) -> User | None:
-    result = await db.execute(select(User).where(User.email == email))  
+    normalized = email.strip().lower()
+    result = await db.execute(select(User).where(User.email == normalized))
     return result.scalar_one_or_none()
 
 
-
-async def register_user(db: AsyncSession, user_in: UserCreate)-> User:
-    existing_user = await get_user_by_email(db, user_in.email)
-
+async def register_user(db: AsyncSession, user_in: UserCreate) -> User:
+    email = user_in.email.strip().lower()
+    existing_user = await get_user_by_email(db, email)
     if existing_user:
-           raise HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="An account with this email already exists",
         )
-    
+
     new_user = User(
-        email=user_in.email,
+        email=email,
         hashed_password=hash_password(user_in.password),
-        github_account=user_in.github_account,
+        github_account=user_in.github_account.strip(),
     )
 
     db.add(new_user)
-    await db.commit()       
-    await db.refresh(new_user)  # Give back the saved row including its new ID
-
+    await db.commit()
+    await db.refresh(new_user)
     return new_user
 
 
-
 async def authenticate_user(db: AsyncSession, email: str, password: str) -> User:
-     user = await get_user_by_email(db, email)
-
-     if not user:
-          raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-          )
-     
-     if not verify_password(password, user.hashed_password):
+    user = await get_user_by_email(db, email)
+    if not user or not verify_password(password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
         )
-
-     return user
+    return user
 
 
 

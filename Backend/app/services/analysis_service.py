@@ -1,3 +1,4 @@
+import logging
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
@@ -7,6 +8,8 @@ from app.models.analysis import Analysis, AnalysisResult
 from app.services.github_service import fetch_repo_data
 from app.services.ast_service import extract_ast_features
 from app.services.ml_service import predict_bug_probability
+
+logger = logging.getLogger("app.analysis_service")
 
 
 async def run_analysis(
@@ -31,7 +34,6 @@ async def run_analysis(
             ast_features = extract_ast_features(file_data["content"])
             combined = {**file_data, **ast_features}
             probability, risk_level = predict_bug_probability(combined)
-
             enriched.append(
                 {
                     "file_name": combined["file_name"],
@@ -39,7 +41,8 @@ async def run_analysis(
                     "risk_level": risk_level,
                 }
             )
-        except Exception:
+        except Exception as exc:
+            logger.exception("Failed processing file %s: %s", file_data.get("file_name"), exc)
             continue
 
     enriched.sort(key=lambda x: x["bug_probability"], reverse=True)
@@ -66,11 +69,11 @@ async def run_analysis(
             )
 
         await db.commit()
-    except Exception:
+    except Exception as exc:
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to save analysis results",
+            detail=f"Failed to save analysis results: {exc}",
         )
 
     result = await db.execute(

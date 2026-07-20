@@ -3,6 +3,7 @@ from pathlib import Path
 import pickle
 
 import numpy as np
+from fastapi import HTTPException, status
 
 logger = logging.getLogger("app.ml_service")
 
@@ -35,10 +36,19 @@ def _load_model():
         return _model
 
     if not MODEL_PATH.exists() or MODEL_PATH.stat().st_size == 0:
-        raise RuntimeError(f"Missing model file at {MODEL_PATH}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Model file missing at {MODEL_PATH}",
+        )
 
-    with open(MODEL_PATH, "rb") as f:
-        _model = pickle.load(f)
+    try:
+        with open(MODEL_PATH, "rb") as f:
+            _model = pickle.load(f)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to load ML model: {exc}",
+        )
 
     logger.info("Loaded trained model from %s", MODEL_PATH)
     return _model
