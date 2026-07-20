@@ -6,6 +6,7 @@ import "./Navbar.css";
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(isLoggedIn());
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -15,10 +16,15 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    setLoggedIn(isLoggedIn());
+  }, [location]);
+
   const isActive = (path) => location.pathname === path;
 
   const handleLogout = () => {
     logout();
+    setLoggedIn(false);
     navigate("/login", { replace: true });
   };
 
@@ -52,13 +58,13 @@ const Navbar = () => {
         </div>
 
         <div className="navbar__right">
-          {isLoggedIn() ? (
+          {loggedIn ? (
             <button className="navbar__cta" onClick={handleLogout}>
               <span className="navbar__cta-dot" />
               Log Out
             </button>
           ) : (
-            <Link to="/login" className="navbar__cta">
+            <Link to="/login" className="navbar__cta" onClick={() => setMenuOpen(false)}>
               <span className="navbar__cta-dot" />
               Log In
             </Link>
