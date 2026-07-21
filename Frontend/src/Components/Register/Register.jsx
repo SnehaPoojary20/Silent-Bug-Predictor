@@ -23,7 +23,15 @@ const Register = () => {
       setSuccess(true);
       setTimeout(() => navigate("/login", { replace: true }), 1200);
     } catch (err) {
-      const detail = err.response?.data?.detail || err.response?.data?.error;
+      const data = err.response?.data;
+      const detail =
+        typeof data?.detail === "string"
+          ? data.detail
+          : typeof data?.message === "string"
+          ? data.message
+          : typeof data?.error === "string"
+          ? data.error
+          : null;
       setError(detail || "Registration failed. Try a different email.");
     } finally {
       setLoading(false);

@@ -19,7 +19,15 @@ const Login = () => {
       await login(email, password);
       navigate("/analyze", { replace: true });
     } catch (err) {
-      const detail = err.response?.data?.detail || err.response?.data?.error;
+      const data = err.response?.data;
+      const detail =
+        typeof data?.detail === "string"
+          ? data.detail
+          : typeof data?.message === "string"
+          ? data.message
+          : typeof data?.error === "string"
+          ? data.error
+          : null;
       setError(detail || "Login failed. Check your credentials.");
     } finally {
       setLoading(false);
